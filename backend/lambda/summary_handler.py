@@ -218,7 +218,11 @@ def handler(event: dict, context) -> dict:
 
         features = rally.get_features(fiscal_year, fiscal_quarter)
         feature_ids = [f.get("FormattedID") for f in features if f.get("FormattedID")]
-        stories = rally.get_user_stories(fiscal_year, fiscal_quarter, feature_ids)
+        # Filter stories to those active in the selected date range (In-Progress/Completed/Accepted)
+        stories = rally.get_user_stories(
+            fiscal_year, fiscal_quarter, feature_ids,
+            start_date=start_date, end_date=end_date,
+        )
         story_ids = [s.get("FormattedID") for s in stories if s.get("FormattedID")]
         tasks = rally.get_tasks(story_ids)
 

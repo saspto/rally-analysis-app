@@ -171,6 +171,25 @@ Resources:
             Path: /summary
             Method: POST
 
+  # ── Lambda: Analytics ────────────────────────────────────────────────────────
+  RallyAnalyticsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub rally-analytics-${Environment}
+      CodeUri: ../backend/lambda/
+      Handler: analytics_handler.handler
+      Description: Computes sprint velocity, burn chart, cycle time, resource allocation, stale stories
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref RallyExportsBucket
+      Events:
+        GetAnalytics:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref RallyApi
+            Path: /analytics
+            Method: GET
+
   # ── Lambda: Download URL ──────────────────────────────────────────────────────
   RallyDownloadUrlFunction:
     Type: AWS::Serverless::Function

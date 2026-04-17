@@ -1,6 +1,7 @@
 import axios from 'axios'
-import { RallyExport, SummaryRequest, SummaryResponse } from '../types'
+import { RallyExport, SummaryRequest, SummaryResponse, AnalyticsResponse } from '../types'
 import { mockExports, mockSummaryResponse } from './mockData'
+import { mockAnalyticsResponse } from './mockAnalytics'
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 const API_URL = import.meta.env.VITE_API_URL || '/api'
@@ -50,6 +51,15 @@ export async function generateSummary(req: SummaryRequest): Promise<SummaryRespo
     }
   }
   const { data } = await client.post<SummaryResponse>('/summary', req)
+  return data
+}
+
+export async function getAnalytics(start_date: string, end_date: string): Promise<AnalyticsResponse> {
+  if (USE_MOCK) {
+    await delay(900)
+    return mockAnalyticsResponse
+  }
+  const { data } = await client.get<AnalyticsResponse>('/analytics', { params: { start_date, end_date } })
   return data
 }
 

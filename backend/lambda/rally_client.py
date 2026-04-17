@@ -110,16 +110,37 @@ class RallyClient:
         fiscal_year: int,
         fiscal_quarter: int,
         feature_ids: list[str] | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Fetch HierarchicalRequirement (user stories) for the given FY/Q."""
+        """Fetch HierarchicalRequirement (user stories).
+
+        If start_date/end_date are provided, stories are filtered to those
+        that are active in the window: created before end OR updated/accepted
+        within the window, in states In-Progress, Completed, or Accepted.
+        Otherwise falls back to the full FY/Q range with all valid states.
+        """
         from utils import fiscal_quarter_date_range, flatten_rally_object
-        start_date, end_date = fiscal_quarter_date_range(fiscal_year, fiscal_quarter)
-        date_filter = (
-            f'(((CreationDate >= "{start_date}T00:00:00Z") AND '
-            f'(CreationDate <= "{end_date}T23:59:59Z")))'
-        )
-        state_filter = self._state_query(STORY_SCHEDULE_STATES, "ScheduleState")
-        query = f"({date_filter} AND {state_filter})"
+
+        if start_date and end_date:
+            # Stories active in the selected period:
+            # (created on or before end_date) AND (last updated or accepted on or after start_date)
+            # AND state is In-Progress / Completed / Accepted
+            active_states = ["In-Progress", "Completed", "Accepted"]
+            date_filter = (
+                f'((CreationDate <= "{end_date}T23:59:59Z") AND '
+                f'(LastUpdateDate >= "{start_date}T00:00:00Z"))'
+            )
+            state_filter = self._state_query(active_states, "ScheduleState")
+            query = f"({date_filter} AND {state_filter})"
+        else:
+            fy_start, fy_end = fiscal_quarter_date_range(fiscal_year, fiscal_quarter)
+            date_filter = (
+                f'(((CreationDate >= "{fy_start}T00:00:00Z") AND '
+                f'(CreationDate <= "{fy_end}T23:59:59Z")))'
+            )
+            state_filter = self._state_query(STORY_SCHEDULE_STATES, "ScheduleState")
+            query = f"({date_filter} AND {state_filter})"
 
         if feature_ids:
             feature_clause = " OR ".join(f'(Feature.FormattedID = "{fid}")' for fid in feature_ids)
@@ -128,7 +149,7 @@ class RallyClient:
         stories = []
         for item in self._fetch_all("hierarchicalrequirement", query, STORY_FIELDS):
             stories.append(flatten_rally_object(item, "UserStory"))
-        logger.info("Fetched %d user stories", len(stories))
+        logger.info("Fetched %d user stories (start=%s end=%s)", len(stories), start_date, end_date)
         return stories
 
     def get_tasks(self, story_ids: list[str] | None = None) -> list[dict[str, Any]]:

@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { BarChart3, Download, FileText } from 'lucide-react'
+import { BarChart3, Download, FileText, BarChart2 } from 'lucide-react'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -38,6 +38,17 @@ export default function Layout({ children }: LayoutProps) {
               >
                 <FileText className="w-4 h-4" />
                 Generate Summary
+              </NavLink>
+              <NavLink
+                to="/analytics"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive ? 'bg-primary-800 text-white' : 'text-primary-100 hover:bg-primary-600'
+                  }`
+                }
+              >
+                <BarChart2 className="w-4 h-4" />
+                Analytics
               </NavLink>
             </nav>
           </div>
