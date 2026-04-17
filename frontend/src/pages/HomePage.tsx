@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { RefreshCw, CloudDownload, AlertCircle, Plus } from 'lucide-react'
+import { RefreshCw, Download, AlertCircle, Plus } from 'lucide-react'
 import { RallyExport } from '../types'
 import { getExports, triggerExport } from '../services/api'
 import ExportCard from '../components/ExportCard'
@@ -46,7 +46,7 @@ export default function HomePage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <CloudDownload className="w-7 h-7 text-primary-700" />
+            <Download className="w-7 h-7 text-primary-700" />
             Rally Data Exports
           </h1>
           <p className="text-sm text-gray-500 mt-1">
@@ -84,7 +84,7 @@ export default function HomePage() {
         <LoadingSpinner message="Loading exports…" />
       ) : exports.length === 0 ? (
         <div className="card text-center py-16 text-gray-400">
-          <CloudDownload className="w-12 h-12 mx-auto mb-3 opacity-30" />
+          <Download className="w-12 h-12 mx-auto mb-3 opacity-30" />
           <p className="font-medium">No exports yet</p>
           <p className="text-sm mt-1">Trigger your first export using the button above.</p>
         </div>
