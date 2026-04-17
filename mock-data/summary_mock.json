@@ -1,0 +1,16 @@
+{
+  "summary_type": "weekly",
+  "start_date": "2026-04-07",
+  "end_date": "2026-04-11",
+  "generated_at": "2026-04-14T10:00:00Z",
+  "summary": "## Weekly Rally Summary: April 7–11, 2026\n\n### Overview\nThis week the team delivered strong execution across three major features in the FY2026 Q1 portfolio. The **User Authentication** feature (F-001) reached the Accepted state, closing out all 3 user stories totaling 34 points. **Dashboard Redesign** (F-002) continues to advance with 2 stories completed (US-004, US-005) and 1 story in progress (US-006). The **API Integration** feature (F-003) has foundational tasks underway with 2 stories active.\n\n### Completed Work\n- **US-003** — Single sign-on (SSO) integration (13 pts) — Accepted by Alice Johnson\n- **US-004** — Dashboard widget layout redesign (5 pts) — Accepted by Eve Martinez\n- **US-005** — Performance chart component (3 pts) — Accepted by Frank Chen\n\n### In Progress\n- **US-006** — Real-time data refresh for dashboard (8 pts) — 75% complete, blocked pending security review approval (expected April 15)\n- **US-007** — API rate limiting and throttling (5 pts) — 50% complete, on track\n\n### Key Metrics\n| Metric | Value |\n|--------|-------|\n| Points Accepted | 21 |\n| Points In Progress | 13 |\n| Team Velocity (4-week avg) | 38 |\n| Stories Completed | 3 |\n| Tasks Completed | 5 |\n| Defects Resolved | 1 |\n\n### Risks & Blockers\n- **US-006** (Webhook processing) is blocked pending security review approval — estimated unblock: April 15\n- QA environment instability on Wednesday impacted testing throughput; resolved Thursday afternoon",
+  "executive_summary": "## Executive Summary — April 7–11, 2026\n\n**Team Velocity:** 21 points accepted | **Completion Rate:** 84% of committed scope\n\nThe development team delivered another productive week, fully closing the User Authentication feature (F-001) — a key Q1 milestone. Three user stories totaling 21 points were accepted. Dashboard Redesign is on track for Q1 completion with one active story in progress. API Integration foundational work is underway with two stories active. One blocker (security review for US-006) is managed and is not expected to impact the Q1 delivery date. Overall portfolio health: **GREEN**.",
+  "metrics": {
+    "features_completed": 1,
+    "stories_completed": 3,
+    "stories_in_progress": 2,
+    "tasks_completed": 5,
+    "total_points_accepted": 21,
+    "team_velocity": 38
+  }
+}

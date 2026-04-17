@@ -1,0 +1,91 @@
+import { RallyExport, SummaryResponse } from '../types'
+
+export const mockExports: RallyExport[] = [
+  {
+    filename: 'rally_export_20260414_150000.csv',
+    s3_key: 'exports/2026/04/rally_export_20260414_150000.csv',
+    created_at: '2026-04-14T15:00:00Z',
+    counts: { features: 3, user_stories: 8, tasks: 15 },
+    download_url: '#',
+  },
+  {
+    filename: 'rally_export_20260413_150000.csv',
+    s3_key: 'exports/2026/04/rally_export_20260413_150000.csv',
+    created_at: '2026-04-13T15:00:00Z',
+    counts: { features: 3, user_stories: 9, tasks: 17 },
+    download_url: '#',
+  },
+  {
+    filename: 'rally_export_20260412_150000.csv',
+    s3_key: 'exports/2026/04/rally_export_20260412_150000.csv',
+    created_at: '2026-04-12T15:00:00Z',
+    counts: { features: 3, user_stories: 7, tasks: 13 },
+    download_url: '#',
+  },
+  {
+    filename: 'rally_export_20260411_150000.csv',
+    s3_key: 'exports/2026/04/rally_export_20260411_150000.csv',
+    created_at: '2026-04-11T15:00:00Z',
+    counts: { features: 2, user_stories: 6, tasks: 11 },
+    download_url: '#',
+  },
+  {
+    filename: 'rally_export_20260410_150000.csv',
+    s3_key: 'exports/2026/04/rally_export_20260410_150000.csv',
+    created_at: '2026-04-10T15:00:00Z',
+    counts: { features: 2, user_stories: 5, tasks: 10 },
+    download_url: '#',
+  },
+]
+
+export const mockSummaryResponse: SummaryResponse = {
+  summary: `## Weekly Rally Summary: April 7–11, 2026
+
+### Overview
+This week the team delivered strong execution across three major features in the FY2026 Q1 portfolio. The **User Authentication** feature reached the Accepted state, closing out 5 user stories totaling 34 points. **Dashboard Redesign** continues to advance with 3 stories completed and 2 still in progress. The **API Integration** feature has one story accepted and foundational tasks underway for the remaining scope.
+
+### Completed Work
+- **US-0023** — Implement JWT token validation (8 pts) — Accepted
+- **US-0024** — Add refresh token support (5 pts) — Accepted
+- **US-0027** — Single sign-on (SSO) integration (13 pts) — Accepted
+- **US-0031** — Dashboard widget layout redesign (5 pts) — Accepted
+- **US-0032** — Performance chart component (3 pts) — Accepted
+
+### In Progress
+- **US-0033** — Real-time data refresh for dashboard (8 pts) — In-Progress (75% done)
+- **US-0035** — API rate limiting and throttling (5 pts) — In-Progress (50% done)
+- **US-0036** — Webhook event processing (8 pts) — In-Progress (25% done)
+
+### Key Metrics
+| Metric | Value |
+|--------|-------|
+| Points Accepted | 34 |
+| Points In Progress | 21 |
+| Team Velocity (4-week avg) | 38 |
+| Stories Completed | 5 |
+| Defects Resolved | 2 |
+
+### Risks & Blockers
+- **US-0036** (Webhook processing) is blocked pending security review approval — estimated unblock: April 15
+- QA environment instability impacted testing throughput on Wednesday; issue resolved Thursday afternoon`,
+
+  executive_summary: `## Executive Summary — April 7–11, 2026
+
+**Team Velocity:** 34 points accepted | **Completion Rate:** 78% of committed scope
+
+The development team delivered another solid week, accepting 34 story points across the User Authentication and Dashboard Redesign features. The User Authentication feature is now fully closed, meeting the Q1 milestone. Dashboard Redesign is on track for completion next week. One active blocker (webhook security review) is being managed and is not expected to impact the Q1 delivery date. Overall portfolio health is GREEN.`,
+
+  metrics: {
+    features_completed: 1,
+    stories_completed: 5,
+    stories_in_progress: 3,
+    tasks_completed: 11,
+    total_points_accepted: 34,
+    team_velocity: 38,
+  },
+  s3_key: 'summaries/2026/04/summary_20260414_100000.json',
+  generated_at: '2026-04-14T10:00:00Z',
+  start_date: '2026-04-07',
+  end_date: '2026-04-11',
+  summary_type: 'weekly',
+}

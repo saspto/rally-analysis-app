@@ -1,0 +1,18 @@
+Build a webapp with react, python:
+  - TypeScript + Vite
+  - Add/complete/delete tasks
+  - LocalStorage persistence
+  - Tailwind CSS styling
+
+1. I want to export all the features and related user stories and tasks from my workspace in rally to a s3 bucket in a csv file. The export file should have suffix with date like  YYYYMMDD_HHMMSS.csv
+2. Use python 3.14 for the code
+3. Create a lambda function and schedule it to run daily at 3pm EST.
+4. The export file should have all the features and user stories for the current fiscal year and quarter that are in the state of define, in-progress, complete or accepted.
+5. Get all the relevant fields from the feature and user stories and tasks that can be used to summarize what activity was performed in this week or month or quarter.
+6. Create a react web site that can be accessed using cloudfront url that can be used to download the rally export file.
+7. Add another button on the website to generate a summary of rally stories from a start date and end date. Default the dates to the previous week day.
+8. Use claude opus to generate a summary of the rally stories and how in a new page with download options to pdf, docx, excel. Also have an option to generate executive summary and show in a new page that can be downloaded in all the formats.
+9. To query the source data, I have rally workspace name, API-key.
+10. Add proper test cases and mock data for showing to my users.
+11. Once the mock app is accepted, I will update the API-key and workspace to the real ones and deploy again.
+12. Ensure the API-key and workspace name is not hardcoded, should be taken from environment variables. I should be able to use the app for other workspaces also.
