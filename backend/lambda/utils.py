@@ -12,44 +12,51 @@ logger = logging.getLogger(__name__)
 
 
 def get_fiscal_year_quarter(d: date) -> tuple[int, int]:
-    """Return (fiscal_year, fiscal_quarter) for a date using a Feb-1 fiscal year start.
+    """Return (fiscal_year, fiscal_quarter) for a date using an Oct-1 fiscal year start.
 
-    Q1 = Feb–Apr, Q2 = May–Jul, Q3 = Aug–Oct, Q4 = Nov–Jan
+    FY label = the calendar year in which the FY ends (Sep 30).
+    Q1 = Oct–Dec, Q2 = Jan–Mar, Q3 = Apr–Jun, Q4 = Jul–Sep
+
+    Examples:
+      Oct 1 2025  → FY2026 Q1
+      Jan 15 2026 → FY2026 Q2
+      Apr 17 2026 → FY2026 Q3
+      Jul  1 2026 → FY2026 Q4
     """
     month = d.month
     year = d.year
 
-    if month == 1:
-        # January belongs to Q4 of the *previous* fiscal year
-        return year, 4
-
-    # Fiscal year starts Feb 1, so FY = calendar year for Feb-Dec
-    fiscal_year = year
-    if month <= 4:
-        quarter = 1
-    elif month <= 7:
-        quarter = 2
-    elif month <= 10:
-        quarter = 3
+    if month >= 10:
+        # Oct–Dec: Q1 of the *next* fiscal year
+        return year + 1, 1
+    elif month <= 3:
+        # Jan–Mar: Q2
+        return year, 2
+    elif month <= 6:
+        # Apr–Jun: Q3
+        return year, 3
     else:
-        quarter = 4
-
-    return fiscal_year, quarter
+        # Jul–Sep: Q4
+        return year, 4
 
 
 def fiscal_quarter_date_range(fiscal_year: int, fiscal_quarter: int) -> tuple[date, date]:
-    """Return (start_date, end_date) for a given FY/Q."""
+    """Return (start_date, end_date) for a given FY/Q (Oct-1 fiscal year start).
+
+    FY label is the calendar year the FY ends (Sep 30).
+    Q1 spans Oct–Dec of the *previous* calendar year.
+    """
     quarter_starts = {
-        1: (fiscal_year, 2, 1),
-        2: (fiscal_year, 5, 1),
-        3: (fiscal_year, 8, 1),
-        4: (fiscal_year, 11, 1),
+        1: (fiscal_year - 1, 10, 1),
+        2: (fiscal_year, 1, 1),
+        3: (fiscal_year, 4, 1),
+        4: (fiscal_year, 7, 1),
     }
     quarter_ends = {
-        1: (fiscal_year, 4, 30),
-        2: (fiscal_year, 7, 31),
-        3: (fiscal_year, 10, 31),
-        4: (fiscal_year + 1, 1, 31),
+        1: (fiscal_year - 1, 12, 31),
+        2: (fiscal_year, 3, 31),
+        3: (fiscal_year, 6, 30),
+        4: (fiscal_year, 9, 30),
     }
     start = date(*quarter_starts[fiscal_quarter])
     end = date(*quarter_ends[fiscal_quarter])
@@ -57,13 +64,20 @@ def fiscal_quarter_date_range(fiscal_year: int, fiscal_quarter: int) -> tuple[da
 
 
 def flatten_rally_object(obj: dict[str, Any], obj_type: str) -> dict[str, Any]:
-    """Flatten a nested Rally API response object to a flat dict."""
+    """Flatten a nested Rally API response object to a flat dict.
+
+    Owner is expanded to OwnerName, OwnerUserName, and OwnerEmail columns
+    so every exported row clearly identifies who owns the item.
+    """
     flat: dict[str, Any] = {"Type": obj_type}
     for key, value in obj.items():
         if key.startswith("_") and key not in ("_ref",):
             continue
-        if isinstance(value, dict):
-            # Nested ref object — extract Name or FormattedID
+        if key == "Owner" and isinstance(value, dict):
+            flat["OwnerName"] = value.get("_refObjectName", "")
+            flat["OwnerUserName"] = value.get("UserName", "")
+            flat["OwnerEmail"] = value.get("EmailAddress", "")
+        elif isinstance(value, dict):
             flat[key] = value.get("_refObjectName") or value.get("FormattedID") or value.get("Name") or str(value)
         elif isinstance(value, list):
             flat[key] = ", ".join(str(v) for v in value)

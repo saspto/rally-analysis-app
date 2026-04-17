@@ -28,6 +28,7 @@ export interface SummaryMetrics {
 export interface SummaryResponse {
   summary: string
   executive_summary?: string
+  detailed_summary?: string
   s3_key: string
   generated_at: string
   metrics?: SummaryMetrics

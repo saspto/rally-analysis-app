@@ -12,22 +12,26 @@ BASE_URL = "https://rally1.rallydev.com/slm/webservice/v2.0"
 PAGE_SIZE = 200
 
 FEATURE_FIELDS = [
-    "FormattedID", "Name", "Description", "State", "Owner", "Project",
-    "Release", "Iteration", "PlanEstimate", "AcceptedDate", "CreationDate",
-    "LastUpdateDate", "Tags", "PercentDoneByStoryCount",
+    "FormattedID", "Name", "Description", "State",
+    "Owner", "Owner.UserName", "Owner.EmailAddress",
+    "Project", "Release", "Iteration", "PlanEstimate", "AcceptedDate",
+    "CreationDate", "LastUpdateDate", "Tags", "PercentDoneByStoryCount",
     "PercentDoneByStoryPlanEstimate", "Parent",
 ]
 
 STORY_FIELDS = [
-    "FormattedID", "Name", "Description", "State", "Owner", "Project",
-    "Release", "Iteration", "PlanEstimate", "Estimate", "TaskEstimateTotal",
-    "TaskActualTotal", "ScheduleState", "AcceptedDate", "CreationDate",
-    "LastUpdateDate", "Tags", "Parent", "Feature",
+    "FormattedID", "Name", "Description", "State",
+    "Owner", "Owner.UserName", "Owner.EmailAddress",
+    "Project", "Release", "Iteration", "PlanEstimate", "Estimate",
+    "TaskEstimateTotal", "TaskActualTotal", "ScheduleState", "AcceptedDate",
+    "CreationDate", "LastUpdateDate", "Tags", "Parent", "Feature",
 ]
 
 TASK_FIELDS = [
-    "FormattedID", "Name", "Description", "State", "Owner", "Project",
-    "WorkProduct", "Estimate", "Actuals", "ToDo", "CreationDate", "LastUpdateDate",
+    "FormattedID", "Name", "Description", "State",
+    "Owner", "Owner.UserName", "Owner.EmailAddress",
+    "Project", "WorkProduct", "Estimate", "Actuals", "ToDo",
+    "CreationDate", "LastUpdateDate",
 ]
 
 VALID_STATES = ["Defined", "In-Progress", "Completed", "Accepted"]

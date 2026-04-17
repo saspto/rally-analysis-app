@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { format, subDays, isWeekend } from 'date-fns'
-import { FileText, Sparkles, AlertCircle, Download, TrendingUp } from 'lucide-react'
+import { FileText, Sparkles, AlertCircle, Download, TrendingUp, Users } from 'lucide-react'
 import { SummaryRequest, SummaryResponse, DownloadFormat } from '../types'
 import { generateSummary } from '../services/api'
 import { downloadAsPDF, downloadAsDOCX, downloadAsExcel } from '../services/exportUtils'
@@ -59,6 +59,11 @@ export default function SummaryPage() {
   function handleExecutiveSummary() {
     if (!result) return
     navigate('/executive-summary', { state: { summaryData: result } })
+  }
+
+  function handleDetailedSummary() {
+    if (!result) return
+    navigate('/detailed-summary', { state: { summaryData: result } })
   }
 
   return (
@@ -168,7 +173,11 @@ export default function SummaryPage() {
             </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-3">
+            <button className="btn-secondary px-6" onClick={handleDetailedSummary}>
+              <Users className="w-4 h-4" />
+              View Detailed Story Summary
+            </button>
             <button className="btn-primary px-6" onClick={handleExecutiveSummary}>
               <TrendingUp className="w-4 h-4" />
               View Executive Summary

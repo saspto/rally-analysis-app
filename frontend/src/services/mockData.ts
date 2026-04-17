@@ -83,6 +83,43 @@ The development team delivered another solid week, accepting 34 story points acr
     total_points_accepted: 34,
     team_velocity: 38,
   },
+  detailed_summary: `## Detailed Rally Story Report: April 7–11, 2026
+
+### US-003 — Single sign-on (SSO) integration
+**Owner:** Alice Johnson (alice.johnson@company.com) | **Feature:** F-001 User Authentication | **State:** Accepted | **Points:** 13
+**Created:** 2026-04-10 | **Last Updated:** 2026-06-10 | **Accepted:** 2026-06-10
+
+This story implemented enterprise-grade Single Sign-On via Okta SAML 2.0, enabling customers to authenticate using their corporate identity provider. Alice Johnson led the end-to-end implementation, covering the SAML app configuration on the Okta side and the corresponding assertion consumer service on the platform. The work involved careful coordination with the security team to ensure the signing certificates and metadata exchange met compliance requirements. Two tasks were completed: Okta SAML configuration (TA-004, 8h estimated / 8h actual) and SSO login flow integration tests (TA-005, 3h estimated / 4h actual). The slight overrun on testing was due to a redirect loop edge case discovered during QA. The story was accepted on schedule with no outstanding issues.
+
+---
+
+### US-004 — Dashboard widget layout redesign
+**Owner:** Eve Martinez (eve.martinez@company.com) | **Feature:** F-002 Dashboard Redesign | **State:** Accepted | **Points:** 5
+**Created:** 2026-04-20 | **Last Updated:** 2026-06-09 | **Accepted:** 2026-06-09
+
+This story modernized the dashboard grid to support drag-and-drop widget reordering using the React DnD library. Eve Martinez completed TA-006 (6h estimated / 5h actual), coming in slightly under estimate due to reusing an existing grid abstraction. The new layout supports persisting widget order to user preferences. Acceptance criteria were met fully, with cross-browser testing completed in Chrome, Firefox, and Safari. The story feeds directly into US-006 (real-time data refresh) which depends on the new widget container API introduced here.
+
+---
+
+### US-006 — Real-time data refresh for dashboard
+**Owner:** Eve Martinez (eve.martinez@company.com) | **Feature:** F-002 Dashboard Redesign | **State:** In-Progress | **Points:** 8
+**Created:** 2026-05-01 | **Last Updated:** 2026-06-11 | **Accepted:** Pending
+
+This story adds WebSocket-based live data refresh to the dashboard widgets. TA-008 (WebSocket server setup) is 50% complete (3h actuals out of 6h estimate, 3h remaining). The primary blocker is a pending security review for the WebSocket endpoint configuration — approval is expected by April 15. Once unblocked, Eve estimates 2–3 days to complete the client-side subscription logic and tie it into the widget state management introduced in US-004. No architectural concerns at this time.
+
+---
+
+## Team Activity Summary
+
+| Owner | Stories | Points | Completed | In Progress |
+|-------|---------|--------|-----------|-------------|
+| Alice Johnson | US-001, US-003 | 21 | 2 | 0 |
+| Dave Lee | US-002 | 5 | 1 | 0 |
+| Eve Martinez | US-004, US-006 | 13 | 1 | 1 |
+| Frank Chen | US-005 | 3 | 1 | 0 |
+| Grace Kim | US-007 | 5 | 0 | 1 |
+| Henry Wang | US-008 | 0 | 0 | 0 |`,
+
   s3_key: 'summaries/2026/04/summary_20260414_100000.json',
   generated_at: '2026-04-14T10:00:00Z',
   start_date: '2026-04-07',

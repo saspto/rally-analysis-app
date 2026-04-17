@@ -42,7 +42,8 @@ def _format_data_for_prompt(
         f"Features ({len(features)}): " + (
             "; ".join(
                 f"{f.get('FormattedID')} - {f.get('Name')} [State: {f.get('State')},"
-                f" PlanEstimate: {f.get('PlanEstimate')}, Done: {f.get('PercentDoneByStoryCount')}%]"
+                f" Owner: {f.get('OwnerName')}, PlanEstimate: {f.get('PlanEstimate')},"
+                f" Done: {f.get('PercentDoneByStoryCount')}%]"
                 for f in features
             ) or "None"
         ),
@@ -50,17 +51,25 @@ def _format_data_for_prompt(
         f"User Stories ({len(stories)}): ",
     ]
     for s in stories:
+        tasks_for_story = [t for t in tasks if t.get("WorkProduct") == s.get("FormattedID")]
         lines.append(
             f"  {s.get('FormattedID')} - {s.get('Name')} "
             f"[Feature: {s.get('Feature')}, State: {s.get('ScheduleState') or s.get('State')}, "
-            f"Points: {s.get('PlanEstimate')}, Owner: {s.get('Owner')}]"
+            f"Points: {s.get('PlanEstimate')}, Owner: {s.get('OwnerName')} ({s.get('OwnerEmail')}), "
+            f"Created: {s.get('CreationDate', '')[:10]}, LastUpdated: {s.get('LastUpdateDate', '')[:10]}, "
+            f"AcceptedDate: {s.get('AcceptedDate', 'N/A')}, "
+            f"Tasks: {len(tasks_for_story)} total, "
+            f"{sum(1 for t in tasks_for_story if t.get('State') == 'Completed')} completed]"
         )
+        if s.get("Description"):
+            lines.append(f"    Description: {s.get('Description')[:300]}")
 
     lines += ["", f"Tasks ({len(tasks)}): "]
     for t in tasks:
         lines.append(
             f"  {t.get('FormattedID')} - {t.get('Name')} "
             f"[Story: {t.get('WorkProduct')}, State: {t.get('State')}, "
+            f"Owner: {t.get('OwnerName')} ({t.get('OwnerEmail')}), "
             f"Estimate: {t.get('Estimate')}h, Actuals: {t.get('Actuals')}h, ToDo: {t.get('ToDo')}h]"
         )
     return "\n".join(lines)
@@ -94,6 +103,62 @@ Write a comprehensive {period_word} summary with these sections:
 ### Risks & Blockers
 
 Use markdown formatting. Be specific and reference actual FormattedIDs and names from the data."""
+
+
+def _build_detailed_stories_prompt(
+    features: list[dict],
+    stories: list[dict],
+    tasks: list[dict],
+    start_date: str,
+    end_date: str,
+) -> str:
+    """Build prompt for per-story detailed narrative summaries."""
+    story_blocks = []
+    for s in stories:
+        tasks_for_story = [t for t in tasks if t.get("WorkProduct") == s.get("FormattedID")]
+        task_lines = "\n".join(
+            f"    - {t.get('FormattedID')}: {t.get('Name')} "
+            f"[{t.get('State')}, Owner: {t.get('OwnerName')}, "
+            f"Est: {t.get('Estimate')}h, Actual: {t.get('Actuals')}h, Remaining: {t.get('ToDo')}h]"
+            for t in tasks_for_story
+        ) or "    (no tasks)"
+        story_blocks.append(
+            f"Story: {s.get('FormattedID')} — {s.get('Name')}\n"
+            f"  Feature: {s.get('Feature')}\n"
+            f"  Owner: {s.get('OwnerName')} ({s.get('OwnerEmail')})\n"
+            f"  State: {s.get('ScheduleState') or s.get('State')}\n"
+            f"  Points: {s.get('PlanEstimate')}\n"
+            f"  Start/Created: {str(s.get('CreationDate', ''))[:10]}\n"
+            f"  Last Updated: {str(s.get('LastUpdateDate', ''))[:10]}\n"
+            f"  Accepted Date: {str(s.get('AcceptedDate', 'Not yet accepted'))[:10]}\n"
+            f"  Description: {s.get('Description') or 'N/A'}\n"
+            f"  Tasks:\n{task_lines}"
+        )
+
+    stories_text = "\n\n".join(story_blocks)
+    return f"""You are a technical program manager writing a detailed Rally activity report for the period {start_date} to {end_date}.
+
+Below are all user stories with their tasks, owners, and dates:
+
+{stories_text}
+
+For EACH user story above, write a concise narrative summary of 5–10 lines that includes:
+- What the story is about and its business/technical purpose
+- Who owns it and what progress has been made
+- Start date, last update date, and accepted date (or current status if not accepted)
+- Key tasks completed and remaining
+- Any notable observations about pace, complexity, or blockers
+
+Format each story as:
+### [FormattedID] — [Story Name]
+**Owner:** [Name] | **Feature:** [Feature] | **State:** [State] | **Points:** [N]
+**Created:** [date] | **Last Updated:** [date] | **Accepted:** [date or Pending]
+
+[5–10 line narrative]
+
+---
+
+After all stories, add a ## Team Activity Summary section with a table showing each owner, their stories, total points, and completion status."""
 
 
 def _extract_metrics(features: list[dict], stories: list[dict], tasks: list[dict]) -> dict:
@@ -163,22 +228,28 @@ def handler(event: dict, context) -> dict:
         ai_client = anthropic.Anthropic(api_key=anthropic_key)
 
         # Generate main summary
-        main_prompt = _build_prompt(data_str, summary_type, is_executive=False)
         main_response = ai_client.messages.create(
             model=MODEL_ID,
             max_tokens=MAX_TOKENS,
-            messages=[{"role": "user", "content": main_prompt}],
+            messages=[{"role": "user", "content": _build_prompt(data_str, summary_type, is_executive=False)}],
         )
         main_summary = main_response.content[0].text
 
         # Generate executive summary
-        exec_prompt = _build_prompt(data_str, summary_type, is_executive=True)
         exec_response = ai_client.messages.create(
             model=MODEL_ID,
             max_tokens=1024,
-            messages=[{"role": "user", "content": exec_prompt}],
+            messages=[{"role": "user", "content": _build_prompt(data_str, summary_type, is_executive=True)}],
         )
         exec_summary = exec_response.content[0].text
+
+        # Generate detailed per-story summary
+        detailed_response = ai_client.messages.create(
+            model=MODEL_ID,
+            max_tokens=MAX_TOKENS,
+            messages=[{"role": "user", "content": _build_detailed_stories_prompt(features, stories, tasks, start_date, end_date)}],
+        )
+        detailed_summary = detailed_response.content[0].text
 
         # Save to S3
         now = datetime.now(timezone.utc)
@@ -187,6 +258,7 @@ def handler(event: dict, context) -> dict:
         payload = {
             "summary": main_summary,
             "executive_summary": exec_summary,
+            "detailed_summary": detailed_summary,
             "metrics": metrics,
             "start_date": start_date,
             "end_date": end_date,
